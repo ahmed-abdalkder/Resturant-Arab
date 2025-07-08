@@ -1,0 +1,14 @@
+ "use strict";
+import { Router } from "express";
+import * as RC from "./Reservation.controler.js";
+import { auth } from "../../middleware/auth.js";
+import { systemroles } from "../../utils/systemroles.js";
+const router = Router();
+router.post("/", auth([systemroles.user]), RC.createReservation);
+router.get("/confirm/:token", RC.confirm);
+router.get("/getReservations", auth([systemroles.user]), RC.getReservations);
+router.get("/getReservation/:id", auth([systemroles.user]), RC.getReservation);
+router.put("/:id", auth([systemroles.user]), RC.cancelReservation);
+router.put("/update/:reservationId",auth([systemroles.user]),RC.updateReservation,);
+router.get("/status", RC.reservationStatus);
+export default router;

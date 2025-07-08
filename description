@@ -1,0 +1,298 @@
+
+ Introduction
+YumYum is a modern,
+ full-featured restaurant management system designed to elevate both the customer experience and operational efficiency of any food business.
+  From browsing dishes to booking tables, from managing orders to handling payments — everything is seamlessly integrated in one responsive, 
+  secure platform.
+Whether you're running a single branch or a multi-location restaurant,
+ YumYum provides the tools you need to operate smarter, faster, and better.
+
+Key Features:
+User Authentication and Authorization:
+
+Secure signup and login system for users, admins, and superadmins with role-based access control.
+
+Email confirmation and password reset workflows.
+
+Google OAuth integration for easy social login.
+
+Reservation Management:
+
+Customers can create, update, confirm, or cancel reservations.
+
+The system ensures no double bookings by checking table availability against reservation times.
+
+Automatic status updates mark reservations as complete when the end time passes.
+
+Timezone-aware date handling ensures accurate reservation timing globally.
+
+Table Management:
+
+Admins can add, update, or delete tables.
+
+The system prevents modifications to tables that have active reservations.
+
+Tables are linked to specific restaurant branches.
+
+Reviews and Ratings:
+
+Customers can add reviews with ratings.
+
+Aggregate average rating and total reviews are computed dynamically.
+
+Users can update or delete their reviews securely.
+
+Order and Payment Handling:
+
+Integration with Stripe for payment checkout sessions.
+
+Webhook support for asynchronous order updates.
+
+Coupon and discount support reflected in invoices.
+
+Email Notifications:
+
+Email confirmations for account signup, reservation cancellations, and password resets.
+
+Uses Nodemailer with Gmail service for sending emails.
+
+PDF Invoice Generation:
+
+Dynamic generation of PDF invoices with company logo, customer information, and itemized billing.
+
+Uses pdfkit for creating professional invoice documents.
+
+Middleware & Utilities:
+
+Global error handler and async handler for consistent error management.
+
+Multer for file uploads with validation for images, PDFs, and videos.
+
+Centralized configuration for environment variables and cloud services (Cloudinary).
+
+API Routing & Security:
+
+RESTful API structure with express routers for modules like users, reservations, reviews, tables, orders, branches, foods, and categories.
+
+Role-based route protection using middleware.
+
+CORS and session management configured for secure client-server communication.
+
+Deployment:
+
+Configuration for Vercel deployment with Node.js runtime.
+
+Entry point and routing defined in vercel.json.
+
+Technology Stack:
+Backend: Node.js, Express.js, MongoDB (Mongoose)
+
+Authentication: JWT, Passport.js, Google OAuth
+
+Payment: Stripe API
+
+Email Service: Nodemailer with Gmail
+
+File Upload: Multer, Cloudinary
+
+PDF Generation: pdfkit
+
+Deployment: Vercel
+
+Utilities: dotenv, bcrypt, nanoid, Luxon (for timezone management)
+
+Summary
+This project provides a robust and scalable solution for managing restaurant operations,
+ focusing on customer reservations, table allocation, user management, reviews, orders,
+  and payments. The system is designed with best practices for security, modularity, and user experience,
+   making it suitable for real-world restaurant businesses aiming for digital transformation.
+
+ YumYum Full-Featured Restaurant Web App (Frontend + Admin Dashboard)
+  Overview
+YumYum is a complete restaurant management system designed to offer both an elegant user-facing experience and a powerful admin dashboard. It enables customers to explore menus, make reservations, place orders, and leave reviews, while providing admins with full control over branches, food items, categories, orders, tables, users, and more.
+
+The application is built with React.js, styled using Tailwind CSS, and powered by React Query for efficient data handling. Authentication is managed through a Context API, and backend communication happens via custom hooks calling RESTful APIs.
+
+  Tech Stack
+Frontend Framework: React.js
+
+Styling: Tailwind CSS
+
+Routing: React Router
+
+State Management: React Context API
+
+Data Fetching: React Query
+
+Icons: react-icons
+
+Slider / Carousel: react-slick
+
+Toasts: react-hot-toast
+
+Authentication: Token-based (with role-based routing)
+
+Backend (assumed): Node.js + Express
+
+Deployment: Frontend and Backend both hosted on Vercel
+
+  Application Structure
+  1. User Layout
+Home: Public landing page with intro sections.
+
+Menu: Filter and view food categories and items.
+
+Food Details: View specific item details, pricing, and options.
+
+Cart: Add and manage selected items before checkout.
+
+Orders: View and track your order history.
+
+Reservations: Book a table with time, date, and timezone support.
+
+Reviews: Leave reviews using a form modal and view others reviews.
+
+  2. Admin Layout
+WelcomeAdmin: Dashboard homepage with quick access to features.
+
+AdminCategories: Create, update, delete food categories.
+
+AdminFoods: Manage food items and their image uploads.
+
+AdminBranches: Control restaurant branches (address, phone, etc.).
+
+AdminTables: Assign tables to branches with capacity details.
+
+AdminOrders: Monitor and update order statuses.
+
+ManageUsers: Add/remove users or admins and manage their access.
+
+  3. Auth Layout
+Login / Register / Forget Password / Reset Password
+
+All forms are wrapped in an AuthLayout for unified design.
+
+  Core Components & Features
+  ReviewModal.jsx
+Modal form for submitting star-rated reviews.
+
+Uses Formik and Yup for validation.
+
+  ReviewsSlider.jsx
+Displays reviews in a slick carousel with star logic (full, half, empty).
+
+  RequireLogin.jsx
+Role-based protection for routes.
+
+Redirects unauthorized users to login.
+
+  SidebarMenu.jsx
+Dynamic menu list fetched from the backend via React Query.
+
+  DarkLightIcon.jsx
+Toggles between light and dark mode using localStorage.
+
+  NotFound.jsx
+404 page redirecting user to appropriate dashboard/home based on role.
+
+  ScrollToTop.jsx
+Scrolls the view to top upon route changes.
+
+ Authentication & Authorization
+User token and role are stored in localStorage.
+
+Role-based route guarding ensures only allowed users access protected pages.
+
+authContext provides global access to token and login state.
+
+All protected requests send token in headers.
+
+  Orders & Payment Flow
+Orders created from Cart screen.
+
+Payment handled through a redirect mechanism:
+
+/orders/success/:id → Confirmation page
+
+/orders/cancel/:id → Cancellation feedback
+
+  Admin-Specific Feature Modules
+  Branch Management
+Add/edit/delete restaurant branches with image, location, and contact.
+
+Managed via AdminBranches component and useBranchApi.
+
+  Menu Management
+Add/update/delete food items and variants.
+
+Upload images and organize by categories.
+
+Managed via AdminFoods and useMenuApi.
+
+  Reservation Management
+View user reservations.
+
+Support for timezone, table count, and auto-cancel.
+
+Handled via useReservationsApi.
+
+  Order Management
+View all user orders, update statuses (e.g., preparing, completed).
+
+Admin-specific view powered by useOrdersApi.
+
+  User Management
+Manage users and other admins (CRUD).
+
+Toggle admin roles and confirm registrations.
+
+Interface: ManageUsers + API via useUsersApi.
+
+  Table Management
+Assign tables to branches.
+
+Control seat capacity and table IDs.
+
+API logic: useTablesApi.
+
+  Review Moderation
+Fetch and display all submitted reviews.
+
+Use useReviewsApi for submission and retrieval.
+
+  React Query Strategy
+All GET requests use useQuery.
+
+All POST, PUT, DELETE operations use useMutation.
+
+After each mutation, queryClient.invalidateQueries(["key"]) is triggered for cache refetching.
+
+  UX Enhancements
+Fully responsive on all screens.
+
+Elegant light/dark theme switch.
+
+Form validation using Formik + Yup.
+
+Toast notifications for all actions.
+
+Loaders for all async operations.
+
+Modals for input forms and review submission.
+
+  Project Architecture
+Each feature module is broken down into:
+
+A UI component (e.g., AdminFoods)
+
+A custom API hook (e.g., useFoodsApi)
+
+Modal-driven inputs where applicable
+
+Centralized error handling and loading states
+
+  Summary
+YumYum is a modular,
+ scalable restaurant management platform. It is tailored for restaurant owners and staff to easily manage their business operations,
+  and for users to enjoy a seamless food-ordering and dining experience. Its codebase is organized, 
+  well-commented, and optimized for real-world deployment — making it suitable for both learning and production use.
