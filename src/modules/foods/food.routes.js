@@ -9,7 +9,7 @@ const router = Router();
 
 router.post(
   "/",
-  globalMulter(dataValidation.image).single("image"),
+  globalMulter(dataValidation.image).single("الصورة"),
   auth(systemroles.admin),
   FC.createFood,
 );
