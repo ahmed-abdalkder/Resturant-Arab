@@ -12,7 +12,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL:  "https://yumyum-server-six.vercel.app/auth/google/callback",
+      callbackURL:  "https://resturant-arab.vercel.app/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
