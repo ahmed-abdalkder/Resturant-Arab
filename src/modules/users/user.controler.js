@@ -65,7 +65,7 @@ export const confirm = asyncHandeler(async (req, res, next) => {
     { email: decoded.email, confirmed: false },
     { confirmed: true },
   );
-  return res.redirect("https://restaurant-yummy-yum.vercel.app/");
+  return res.redirect("http://localhost:5173/");
 });
 
 export const signinadmin = asyncHandeler(async (req, res, next) => {
