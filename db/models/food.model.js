@@ -3,59 +3,61 @@ import mongoose, { Types } from "mongoose";
 
 
 const variantSchema = new mongoose.Schema({
-  النوع: {
+  type: {
     type: String,
     required: true,
-    enum: ["حجم", "كمية", "إضافة"],
+    enum: ["size", "quantity", "extra"],
   },
-  الاسم: {
+  label: {
     type: String,
     required: true,
   },
-  السعر: {
+  price: {
     type: Number,
     required: true,
   },
-  السعر_الفرعي: {
+  subPrice: {
     type: Number,
     required: true,
   },
 });
 
+
 const FoodSchema = new mongoose.Schema(
   {
-    العنوان: {
-      type: String,
-      required: true,
-    },
-    الوصف: {
-      type: String,
-      required: true,
-    },
-    معرف_المنشئ: {
-      type: mongoose.Types.ObjectId,
-      ref: "user",
-      required: true,
-    },
-    التصنيف: {
-      type: mongoose.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
-    الصورة: { secure_url: String, public_id: String },
-    معرف_مخصص: String,
-    الخصم: {
-      type: Number,
-      default: 0,
-    },
-    الخيارات: [variantSchema],
-    اسم_التصنيف: String,
+    title: {
+    type: String,
+    required: true,
   },
-  {
-    timestamps: true,
-    versionKey: false,
-  }
-);
+  description: {
+    type: String,
+    required: true,
+  },
+  creatorId: {
+    type: mongoose.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
+  category: {
+    type: mongoose.Types.ObjectId,
+    ref: "Category",
+    required: true,
+  },
+  image: {
+    secure_url: String,
+    public_id: String,
+  },
+  customId: String,
+  discount: {
+    type: Number,
+    default: 0,
+  },
+  variants: [variantSchema],
+  categoryName: String,
+}, {
+  timestamps: true,
+  versionKey: false,
+});
 
 const foodModel = mongoose.model("Food", FoodSchema);
 export default foodModel;

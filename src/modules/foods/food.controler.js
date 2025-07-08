@@ -6,143 +6,70 @@ import cloudinary from "../../service/cloudinary.js";
 import { asyncHandeler } from "../../utils/asyncHandeler.js";
 import { AppError } from "../../utils/classAppError.js";
 
-// export const createFood = asyncHandeler(async (req, res, next) => {
-//   const { title, description, category, discount, categoryName } = req.body;
-//   let variants = req.body.variants;
-
-//   if (typeof variants === "string") {
-//     variants = JSON.parse(variants);
-//   }
-
-//   if (!Array.isArray(variants)) {
-//     return next(new AppError("Variants must be an array"));
-//   }
-
-//   const categoryExist = await categoryModel.findById(category);
-
-//   if (!categoryExist) {
-//     return next(new AppError("category not found"));
-//   }
-//   const foodExist = await foodModel.findOne({ title });
-//   if (foodExist) {
-//     return next(new AppError("food allredy exist"));
-//   }
-
-//   const updatedVariants = variants.map((variant) => {
-//     const price = Number(variant.price);
-//     if (isNaN(price)) {
-//       throw new Error("Each variant must have a valid numeric price");
-//     }
-
-//     const subprice = price - (price * (discount || 0)) / 100;
-
-//     return {
-//       ...variant,
-//       price,
-//       subprice,
-//     };
-//   });
-
-//   if (!req.file) {
-//     return next(new AppError("please inter image"));
-//   }
-//   const customId = nanoid(5);
-//   const { secure_url, public_id } = await cloudinary.uploader.upload(
-//     req.file.path,
-//     {
-//       folder: `Resturant/Category/Food/${customId}`,
-//     },
-//   );
-
-//   const food = await foodModel.create({
-//     title,
-//     description,
-//     category,
-//     discount,
-//     image: { secure_url, public_id },
-//     customId,
-//     createdBy: req.user._id,
-//     variants: updatedVariants,
-//     categoryName,
-//   });
-
-//   return res.json({ msg: "food", food });
-// });
-
 export const createFood = asyncHandeler(async (req, res, next) => {
-  const {
-    العنوان,
-    الوصف,
-    التصنيف,
-    الخصم,
-    اسم_التصنيف,
-  } = req.body;
+  const { title, description, category, discount, categoryName } = req.body;
+  let variants = req.body.variants;
 
-  let الخيارات = req.body.الخيارات;
-
-  if (typeof الخيارات === "string") {
-    try {
-      الخيارات = JSON.parse(الخيارات);
-    } catch (err) {
-      return next(new AppError("صيغة الخيارات غير صالحة"));
-    }
+  if (typeof variants === "string") {
+    variants = JSON.parse(variants);
   }
 
-  if (!Array.isArray(الخيارات)) {
-    return next(new AppError("الخيارات يجب أن تكون مصفوفة"));
+  if (!Array.isArray(variants)) {
+    return next(new AppError("Variants must be an array"));
   }
 
-  const التصنيف_موجود = await categoryModel.findById(التصنيف);
-  if (!التصنيف_موجود) {
-    return next(new AppError("لم يتم العثور على التصنيف"));
+  const categoryExist = await categoryModel.findById(category);
+
+  if (!categoryExist) {
+    return next(new AppError("category not found"));
+  }
+  const foodExist = await foodModel.findOne({ title });
+  if (foodExist) {
+    return next(new AppError("food allredy exist"));
   }
 
-  const موجود_فعلاً = await foodModel.findOne({ العنوان });
-  if (موجود_فعلاً) {
-    return next(new AppError("الطعام موجود بالفعل"));
-  }
-
-  const خيارات_محدثة = الخيارات.map((خيار) => {
-    const السعر = Number(خيار.السعر);
-    if (isNaN(السعر)) {
-      throw new Error("كل خيار يجب أن يحتوي على سعر رقمي صحيح");
+  const updatedVariants = variants.map((variant) => {
+    const price = Number(variant.price);
+    if (isNaN(price)) {
+      throw new Error("Each variant must have a valid numeric price");
     }
 
-    const السعر_الفرعي = السعر - (السعر * (الخصم || 0)) / 100;
+    const subprice = price - (price * (discount || 0)) / 100;
 
     return {
-      ...خيار,
-      السعر,
-      السعر_الفرعي,
+      ...variant,
+      price,
+      subprice,
     };
   });
 
   if (!req.file) {
-    return next(new AppError("يرجى إدخال صورة"));
+    return next(new AppError("please inter image"));
   }
-
-  const معرف_مخصص = nanoid(5);
+  const customId = nanoid(5);
   const { secure_url, public_id } = await cloudinary.uploader.upload(
     req.file.path,
     {
-      folder: `Resturant/Category/Food/${معرف_مخصص}`,
-    }
+      folder: `Resturant/Category/Food/${customId}`,
+    },
   );
 
-  const الطعام = await foodModel.create({
-    العنوان,
-    الوصف,
-    التصنيف,
-    الخصم,
-    اسم_التصنيف,
-    الصورة: { secure_url, public_id },
-    معرف_مخصص,
-    معرف_المنشئ: req.user._id,
-    الخيارات: خيارات_محدثة,
+  const food = await foodModel.create({
+    title,
+    description,
+    category,
+    discount,
+    image: { secure_url, public_id },
+    customId,
+    createdBy: req.user._id,
+    variants: updatedVariants,
+    categoryName,
   });
 
-  return res.json({ msg: "تم إضافة الطعام بنجاح", الطعام });
+  return res.json({ msg: "food", food });
 });
+
+ 
 
 export const updateFood = asyncHandeler(async (req, res, next) => {
   const { id } = req.params;
@@ -185,6 +112,7 @@ export const updateFood = asyncHandeler(async (req, res, next) => {
   await food.save();
 
   return res.status(200).json({ message: "Food", food });
+  
 });
 
 export const deleteFood = asyncHandeler(async (req, res, next) => {
