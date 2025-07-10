@@ -69,9 +69,11 @@ import { AppError } from "../../utils/classAppError.js";
 //   return res.json({ msg: "food", food });
 // });
 
- function toArabicNumbers(input) {
+function toArabicNumbers(input) {
+  if (input === undefined || input === null) return "٠";  
   return input.toString().replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[parseInt(d)]);
 }
+
 
  
 function toEnglishNumbers(str) {
@@ -148,8 +150,8 @@ export const createFood = asyncHandeler(async (req, res, next) => {
   // تجهيز الرد بالأرقام العربية
   const arabicVariants = updatedVariants.map((variant) => ({
     ...variant,
-    price: toArabicNumbers(variant.price),
-    subprice: toArabicNumbers(variant.subprice),
+    price: toArabicNumbers(variant.price ?? 0),
+    subprice: toArabicNumbers(variant.subprice ?? 0),
   }));
 
   return res.status(201).json({
