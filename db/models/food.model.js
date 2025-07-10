@@ -13,11 +13,11 @@ const variantSchema = new mongoose.Schema({
     required: true,
   },
   price: {
-    type: Number,
+    type: String,
     required: true,
   },
   subPrice: {
-    type: Number,
+    type: String,
     required: true,
   },
 });
@@ -49,7 +49,7 @@ const FoodSchema = new mongoose.Schema(
   },
   customId: String,
   discount: {
-    type: Number,
+    type: String,
     default: 0,
   },
   variants: [variantSchema],

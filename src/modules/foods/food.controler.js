@@ -6,6 +6,80 @@ import cloudinary from "../../service/cloudinary.js";
 import { asyncHandeler } from "../../utils/asyncHandeler.js";
 import { AppError } from "../../utils/classAppError.js";
 
+// export const createFood = asyncHandeler(async (req, res, next) => {
+//   const { title, description, category, discount, categoryName } = req.body;
+//   let variants = req.body.variants;
+
+//   if (typeof variants === "string") {
+//     variants = JSON.parse(variants);
+//   }
+
+//   if (!Array.isArray(variants)) {
+//     return next(new AppError("Variants must be an array"));
+//   }
+
+//   const categoryExist = await categoryModel.findById(category);
+
+//   if (!categoryExist) {
+//     return next(new AppError("category not found"));
+//   }
+//   const foodExist = await foodModel.findOne({ title });
+//   if (foodExist) {
+//     return next(new AppError("food allredy exist"));
+//   }
+
+//   const updatedVariants = variants.map((variant) => {
+//     const price = Number(variant.price);
+//     if (isNaN(price)) {
+//       throw new Error("Each variant must have a valid numeric price");
+//     }
+
+//     const subprice = price - (price * (discount || 0)) / 100;
+
+//     return {
+//       ...variant,
+//       price,
+//       subprice,
+//     };
+//   });
+
+//   if (!req.file) {
+//     return next(new AppError("please inter image"));
+//   }
+//   const customId = nanoid(5);
+//   const { secure_url, public_id } = await cloudinary.uploader.upload(
+//     req.file.path,
+//     {
+//       folder: `Resturant/Category/Food/${customId}`,
+//     },
+//   );
+
+//   const food = await foodModel.create({
+//     title,
+//     description,
+//     category,
+//     discount,
+//     image: { secure_url, public_id },
+//     customId,
+//     createdBy: req.user._id,
+//     variants: updatedVariants,
+//     categoryName,
+//   });
+
+//   return res.json({ msg: "food", food });
+// });
+
+ function toArabicNumbers(input) {
+  return input.toString().replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[parseInt(d)]);
+}
+
+ 
+function toEnglishNumbers(str) {
+  return str
+    .toString()
+    .replace(/[٠١٢٣٤٥٦٧٨٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+}
+
 export const createFood = asyncHandeler(async (req, res, next) => {
   const { title, description, category, discount, categoryName } = req.body;
   let variants = req.body.variants;
@@ -19,22 +93,28 @@ export const createFood = asyncHandeler(async (req, res, next) => {
   }
 
   const categoryExist = await categoryModel.findById(category);
-
   if (!categoryExist) {
     return next(new AppError("category not found"));
   }
+
   const foodExist = await foodModel.findOne({ title });
   if (foodExist) {
-    return next(new AppError("food allredy exist"));
+    return next(new AppError("food already exists"));
   }
 
+  // تحويل الخصم للأرقام الإنجليزية
+  const parsedDiscount = Number(toEnglishNumbers(discount || 0));
+
+  // تحديث الأسعار
   const updatedVariants = variants.map((variant) => {
-    const price = Number(variant.price);
+    const rawPrice = toEnglishNumbers(variant.price);
+    const price = Number(rawPrice);
+
     if (isNaN(price)) {
       throw new Error("Each variant must have a valid numeric price");
     }
 
-    const subprice = price - (price * (discount || 0)) / 100;
+    const subprice = price - (price * parsedDiscount) / 100;
 
     return {
       ...variant,
@@ -44,21 +124,20 @@ export const createFood = asyncHandeler(async (req, res, next) => {
   });
 
   if (!req.file) {
-    return next(new AppError("please inter image"));
+    return next(new AppError("Please upload an image"));
   }
+
   const customId = nanoid(5);
-  const { secure_url, public_id } = await cloudinary.uploader.upload(
-    req.file.path,
-    {
-      folder: `Resturant/Category/Food/${customId}`,
-    },
-  );
+
+  const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+    folder: `Resturant/Category/Food/${customId}`,
+  });
 
   const food = await foodModel.create({
     title,
     description,
     category,
-    discount,
+    discount: parsedDiscount,
     image: { secure_url, public_id },
     customId,
     createdBy: req.user._id,
@@ -66,10 +145,23 @@ export const createFood = asyncHandeler(async (req, res, next) => {
     categoryName,
   });
 
-  return res.json({ msg: "food", food });
+  // تجهيز الرد بالأرقام العربية
+  const arabicVariants = updatedVariants.map((variant) => ({
+    ...variant,
+    price: toArabicNumbers(variant.price),
+    subprice: toArabicNumbers(variant.subprice),
+  }));
+
+  return res.status(201).json({
+    msg: "تم إنشاء المنتج بنجاح",
+    food: {
+      ...food.toObject(),
+      discount: toArabicNumbers(parsedDiscount),
+      variants: arabicVariants,
+    },
+  });
 });
 
- 
 
 export const updateFood = asyncHandeler(async (req, res, next) => {
   const { id } = req.params;
