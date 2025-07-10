@@ -104,10 +104,10 @@ export const createFood = asyncHandeler(async (req, res, next) => {
     return next(new AppError("food already exists"));
   }
 
-  // تحويل الخصم للأرقام الإنجليزية
+ 
   const parsedDiscount = Number(toEnglishNumbers(discount || 0));
 
-  // تحديث الأسعار
+  
   const updatedVariants = variants.map((variant) => {
     const rawPrice = toEnglishNumbers(variant.price);
     const price = Number(rawPrice);
@@ -147,13 +147,21 @@ export const createFood = asyncHandeler(async (req, res, next) => {
     categoryName,
   });
 
-  // تجهيز الرد بالأرقام العربية
-  const arabicVariants = updatedVariants.map((variant) => ({
+  
+  // const arabicVariants = updatedVariants.map((variant) => ({
+  //   ...variant,
+  //   price: toArabicNumbers(variant.price ?? 0),
+  //   subprice: toArabicNumbers(variant.subprice ?? 0),
+  // }));
+const arabicFood = {
+  ...food.toObject(),
+  discount: toArabicNumbers(food.discount ?? 0),
+  variants: updatedVariants.map((variant) => ({
     ...variant,
     price: toArabicNumbers(variant.price ?? 0),
     subprice: toArabicNumbers(variant.subprice ?? 0),
-  }));
-
+  })),
+};
   return res.status(201).json({
     msg: "تم إنشاء المنتج بنجاح",
     food: {
