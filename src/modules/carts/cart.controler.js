@@ -4,6 +4,19 @@ import foodModel from "../../../db/models/food.model.js";
 import { AppError } from "../../utils/classAppError.js";
 import { asyncHandeler } from "../../utils/asyncHandeler.js";
 
+
+
+function toArabicNumbers(input) {
+  if (input === undefined || input === null) return "٠";  
+  return input.toString().replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[parseInt(d)]);
+}
+
+function toEnglishNumbers(str) {
+  return str
+    .toString()
+    .replace(/[٠١٢٣٤٥٦٧٨٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+}
+
 export const createCart = asyncHandeler(async (req, res, next) => {
   const { foodId, quantity, variantId } = req.body;
 

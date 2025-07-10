@@ -231,7 +231,8 @@ export const updateFood = asyncHandeler(async (req, res, next) => {
   }
   food.discount = parsedDiscount;
 
-  // إذا تم إرسال متغيرات جديدة
+  // ✅ تم التعديل هنا
+  // تحديث الـ variants سواء تم إرسالها أم لا، حتى تتحدث subprice
   if (variants) {
     if (typeof variants === "string") {
       try {
@@ -260,6 +261,16 @@ export const updateFood = asyncHandeler(async (req, res, next) => {
     });
 
     food.variants = updatedVariants;
+  } else {
+    // ✅ تم التعديل هنا: إعادة حساب subprice حتى لو مفيش variants مرسلة
+    food.variants = food.variants.map((variant) => {
+      const price = Number(toEnglishNumbers(variant.price));
+      const subprice = price - (price * parsedDiscount) / 100;
+      return {
+        ...variant.toObject(),
+        subprice: subprice.toString(),
+      };
+    });
   }
 
   // إذا تم رفع صورة جديدة
@@ -294,6 +305,7 @@ export const updateFood = asyncHandeler(async (req, res, next) => {
     food: arabicFood,
   });
 });
+
 
 export const deleteFood = asyncHandeler(async (req, res, next) => {
   const { id } = req.params;
