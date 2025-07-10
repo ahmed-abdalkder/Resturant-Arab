@@ -167,7 +167,7 @@ const arabicFood = {
     food: {
       ...food.toObject(),
       discount: toArabicNumbers(parsedDiscount),
-      variants: arabicVariants,
+      variants: arabicFood,
     },
   });
 });
