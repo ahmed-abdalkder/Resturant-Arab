@@ -74,8 +74,6 @@ function toArabicNumbers(input) {
   return input.toString().replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[parseInt(d)]);
 }
 
-
- 
 function toEnglishNumbers(str) {
   return str
     .toString()
@@ -121,7 +119,7 @@ export const createFood = asyncHandeler(async (req, res, next) => {
     return {
       ...variant,
       price,
-      subprice,
+      subprice:subprice.toString(),
     };
   });
 
@@ -147,12 +145,6 @@ export const createFood = asyncHandeler(async (req, res, next) => {
     categoryName,
   });
 
-  
-  // const arabicVariants = updatedVariants.map((variant) => ({
-  //   ...variant,
-  //   price: toArabicNumbers(variant.price ?? 0),
-  //   subprice: toArabicNumbers(variant.subprice ?? 0),
-  // }));
 const arabicFood = {
   ...food.toObject(),
   discount: toArabicNumbers(food.discount ?? 0),
