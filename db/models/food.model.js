@@ -16,7 +16,7 @@ const variantSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  subPrice: {
+  subprice: {
     type: String,
     required: true,
   },
@@ -33,7 +33,7 @@ const FoodSchema = new mongoose.Schema(
     type: String,
     required: true,
   },
-  creatorId: {
+  createdBy: {
     type: mongoose.Types.ObjectId,
     ref: "user",
     required: true,
@@ -50,7 +50,7 @@ const FoodSchema = new mongoose.Schema(
   customId: String,
   discount: {
     type: String,
-    default: 0,
+    
   },
   variants: [variantSchema],
   categoryName: String,
