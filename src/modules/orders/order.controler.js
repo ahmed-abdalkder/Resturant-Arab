@@ -246,7 +246,7 @@ export const webkook = async (req, res, next) => {
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.endpointSecret);
+    event = stripe.webhooks.constructEvent(req.body, sig,"whsec_6xYtPvEk8bU2Y4HSQbMFcYZAjcoIG4QL");
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
