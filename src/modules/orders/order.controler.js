@@ -2,14 +2,11 @@
 import cartModel from "../../../db/models/cart.model.js";
 import foodModel from "../../../db/models/food.model.js";
 import orderModel from "../../../db/models/order.model.js";
-import { sendEmail } from "./../../service/sendemail.js";
-import { createInvoice } from "../../service/pdf.js";
 import Stripe from "stripe";
 import { payment } from "../../../payment.js";
 import { asyncHandeler } from "../../utils/asyncHandeler.js";
 import { AppError } from "../../utils/classAppError.js";
- import fs from "fs";
-import path from "path";
+ 
 
 
  
@@ -23,148 +20,7 @@ function toEnglishNumbers(str) {
     .toString()
     .replace(/[٠١٢٣٤٥٦٧٨٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
 }
-
-// export const createOrder = asyncHandeler(async (req, res, next) => {
-//   const { paymentmethod, phone, address } = req.body;
-
-//   const cart = await cartModel.findOne({ user: req.user._id });
-//   if (!cart || !cart.foods || !cart.foods.length) {
-//     return next(new AppError("Cart is empty"));
-//   }
-
-//   const foods = cart.foods;
-//   const finalFoods = [];
-//   let subprice = 0;
-
-//   for (let item of foods) {
-//     const food = await foodModel.findById(item.foodId);
-//     if (!food) return next(new AppError("Food not found"));
-
-//     const variant = food.variants.find(
-//       (v) => v._id.toString() === item.variantId?.toString(),
-//     );
-
-//     if (item.variantId && !variant) {
-//       return next(new AppError("Variant not found"));
-//     }
-
-//     const unitPrice = variant ? variant.subprice : food.price;
-//     const finalPrice = unitPrice * item.quantity;
-//     subprice += finalPrice;
-
-//     finalFoods.push({
-//       foodId: item.foodId,
-//       title: food.title,
-//       quantity: item.quantity,
-//       price: unitPrice,
-//       finalPrice,
-//       variantId: item.variantId || null,
-//     });
-//   }
-
-//   const totalPrice = subprice;
-
-//   const order = await orderModel.create({
-//     user: req.user._id,
-//     foods: finalFoods,
-//     paymentMethod: paymentmethod,
-//     address,
-//     phone,
-//     subPrice: subprice,
-//     totalPrice,
-//     status: paymentmethod === "cash" ? "placed" : "waitPayment",
-//   });
-
-//   await cartModel.updateOne(
-//     { user: req.user._id },
-//     { foods: [], totalCartPrice: 0 },
-//   );
-
-//   if (paymentmethod == "card") {
-//     const stripe = new Stripe(process.env.stripe_secret);
-
-//     if (req.body?.coupon) {
-//       const coupon = await stripe.coupons.create({
-//         percent_off: req.body.coupon.amount,
-//         duration: "once",
-//       });
-//       req.body.couponId = coupon.id;
-//     }
-
-//     const session = await payment({
-//       payment_method_types: ["card"],
-//       mode: "payment",
-//       customer_email: req.user.email,
-//       metadata: { orderId: order._id.toString() },
-//       success_url: `https://restaurant-yummy-yum.vercel.app/orders/success/${order._id}`,
-//       cancel_url: `https://restaurant-yummy-yum.vercel.app/orders/cancel/${order._id}`,
-//       line_items: order.foods.map((item) => {
-//         const name = `${item.foodId.title}${item.variantId?.label ? ` (${item.variantId.label})` : ""}`;
-//         return {
-//           price_data: {
-//             currency: "egp",
-//             product_data: {
-//               name,
-//             },
-//             unit_amount: item.price * 100,
-//           },
-//           quantity: item.quantity,
-//         };
-//       }),
-
-//       discounts: req.body?.coupon ? [{ coupon: req.body.couponId }] : [],
-//     });
-
-//     return res.status(201).json({ msg: "added", url: session.url });
-//   }
-//   const invoice = {
-//   shipping: {
-//     name: req.user.name,
-//     address: order.address,
-//     city: "Cairo",
-//     state: "Cairo",
-//     country: "Egypt",
-//     postal_code: 94111,
-//   },
-//   items: order.foods.map((item) => ({
-//     title: item.title,
-//     price: item.price,
-//     quantity: item.quantity,
-//     finalprice: item.finalPrice,
-//   })),
-//   subtotal: order.subPrice,
-//   paid: order.totalPrice,
-//   invoice_nr: order._id,
-//   Date: order.createdAt,
-//   coupon: order.coupon || 0,  
-// };
-
  
-//   const pdfBuffer = await createInvoice(invoice);
-
-//   const logoPath = path.join(process.cwd(), "public", "download.jpeg");
-//   const logoBuffer = fs.existsSync(logoPath) ? fs.readFileSync(logoPath) : null;
-
-//   const attachments = [
-//     {
-//       filename: "invoice.pdf",
-//       content: pdfBuffer,
-//       contentType: "application/pdf",
-//     },
-//   ];
-
-//   if (logoBuffer) {
-//     attachments.push({
-//       filename: "logo.jpeg",
-//       content: logoBuffer,
-//       contentType: "image/jpeg",
-//     });
-//   }
-
-//   await sendEmail(req.user.email, "Order Confirmation", "Your order has been succeeded", attachments);
- 
-//   return res.status(201).json({ message: "Order placed", order });
-// });
 export const createOrder = asyncHandeler(async (req, res, next) => {
   const { paymentmethod, phone, address } = req.body;
 
@@ -221,7 +77,7 @@ export const createOrder = asyncHandeler(async (req, res, next) => {
     { foods: [], totalCartPrice: 0 }
   );
 
-  // ✅ تحويل الأسعار للأرقام العربية
+  
   const arabicOrder = {
     ...order.toObject(),
     subPrice: toArabicNumbers(order.subPrice ?? 0),
@@ -234,7 +90,7 @@ export const createOrder = asyncHandeler(async (req, res, next) => {
     })),
   };
 
-  // 🧾 الدفع الإلكتروني
+  
   if (paymentmethod == "card") {
     const stripe = new Stripe(process.env.stripe_secret);
 
@@ -269,57 +125,8 @@ export const createOrder = asyncHandeler(async (req, res, next) => {
 
     return res.status(201).json({ msg: "تم إنشاء الطلب", url: session.url });
   }
-
-  // 🧾 إرسال الإيميل بالفاتورة
-  const invoice = {
-    shipping: {
-      name: req.user.name,
-      address: order.address,
-      city: "Cairo",
-      state: "Cairo",
-      country: "Egypt",
-      postal_code: 94111,
-    },
-    items: order.foods.map((item) => ({
-      title: item.title,
-      price: item.price,
-      quantity: item.quantity,
-      finalprice: item.finalPrice,
-    })),
-    subtotal: order.subPrice,
-    paid: order.totalPrice,
-    invoice_nr: order._id,
-    Date: order.createdAt,
-    coupon: order.coupon || 0,
-  };
-
-  const pdfBuffer = await createInvoice(invoice);
-  const logoPath = path.join(process.cwd(), "public", "download.jpeg");
-  const logoBuffer = fs.existsSync(logoPath) ? fs.readFileSync(logoPath) : null;
-
-  const attachments = [
-    {
-      filename: "invoice.pdf",
-      content: pdfBuffer,
-      contentType: "application/pdf",
-    },
-  ];
-
-  if (logoBuffer) {
-    attachments.push({
-      filename: "logo.jpeg",
-      content: logoBuffer,
-      contentType: "image/jpeg",
-    });
-  }
-
-  await sendEmail(
-    req.user.email,
-    "تأكيد الطلب",
-    "تم تأكيد طلبك بنجاح",
-    attachments
-  );
-
+ 
+  
   return res.status(201).json({ message: "تم إنشاء الطلب", order: arabicOrder });
 });
 

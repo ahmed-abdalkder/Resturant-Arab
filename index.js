@@ -45,7 +45,7 @@ app.get(
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
     const { token } = req.user;
-    res.redirect(`http://localhost:5173/auth?token=${token}`);
+    res.redirect(`https://restaurant-yummyyum-ar.vercel.app/auth?token=${token}`);
   },
 );
 

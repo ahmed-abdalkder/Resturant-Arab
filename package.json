@@ -15,7 +15,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "arabic-reshaper": "^1.1.0",
     "bcrypt": "^6.0.0",
+    "bidi-js": "^1.0.3",
     "cloudinary": "^2.6.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
